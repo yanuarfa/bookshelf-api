@@ -12,6 +12,9 @@
     },
     "rules": {
         "no-console": "off",
-        "linebreak-style": ["error", "windows"]
+        "linebreak-style": "off",
+        "implicit-arrow-linebreak":"off",
+        "comma-dangle":"off",
+        "function-paren-newline": "off"
     }
 }

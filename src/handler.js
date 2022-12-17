@@ -38,6 +38,7 @@ const addBookHandler = (request, h) => {
   }
 
   const newBook = {
+    id,
     name,
     year,
     author,
@@ -45,9 +46,8 @@ const addBookHandler = (request, h) => {
     publisher,
     pageCount,
     readPage,
-    reading,
-    id,
     finished,
+    reading,
     insertedAt,
     updatedAt,
   };
@@ -76,15 +76,100 @@ const addBookHandler = (request, h) => {
   return response;
 };
 
-const getAllBookHandler = () => ({
-  status: 'success',
-  data: {
-    books: books.map((book) => ({
-      id: book.id,
-      name: book.name,
-      publisher: book.publisher,
-    })),
-  },
-});
+const getAllBookHandler = (request, h) => {
+  const { name, reading, finished } = request.query;
 
-module.exports = { addBookHandler, getAllBookHandler };
+  if (name) {
+    const queryBook = books.filter((book) =>
+      book.name.toLowerCase().includes(name.toLowerCase())
+    );
+
+    const response = h.response({
+      status: 'success',
+      data: {
+        books: queryBook.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
+      },
+    });
+    response.code(200);
+    return response;
+  }
+
+  if (reading) {
+    const queryBook = books.filter(
+      (book) => Number(book.reading) === Number(reading)
+    );
+
+    const response = h.response({
+      status: 'success',
+      data: {
+        books: queryBook.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
+      },
+    });
+    response.code(200);
+    return response;
+  }
+
+  if (finished) {
+    const queryBook = books.filter(
+      (book) => Number(book.finished) === Number(finished)
+    );
+
+    const response = h.response({
+      status: 'success',
+      data: {
+        books: queryBook.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
+      },
+    });
+    response.code(200);
+    return response;
+  }
+
+  const response = h.response({
+    status: 'success',
+    data: {
+      books: books.map((book) => ({
+        id: book.id,
+        name: book.name,
+        publisher: book.publisher,
+      })),
+    },
+  });
+  response.code(200);
+  return response;
+};
+
+const getDetailBookHandler = (request, h) => {
+  const { bookId } = request.params;
+
+  const book = books.filter((b) => b.id === bookId)[0];
+
+  if (book !== undefined) {
+    return {
+      status: 'success',
+      data: {
+        book,
+      },
+    };
+  }
+
+  const response = h.response({
+    status: 'fail',
+    message: 'Buku tidak ditemukan',
+  });
+  response.code(404);
+  return response;
+};
+
+module.exports = { addBookHandler, getAllBookHandler, getDetailBookHandler };
